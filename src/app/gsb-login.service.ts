@@ -1,44 +1,38 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { BehaviorSubject } from 'rxjs';
-
-import { Frais } from "./modeles/frais";
-
-class GsbLoginService {
-  recupereBearer() {
-    return "";
-  }
-
-  visiteurId() {
-    return "";
-  }
-}
+import {Login} from "./metier/login";
+import {HttpClient} from "@angular/common/http";
+import {Router} from "@angular/router";
+import {Visiteur} from "./metier/visiteur";
 
 @Injectable({
   providedIn: 'root'
 })
+export class GsbLoginService {
 
-export class GsbFraisService {
-  private _reponses = new BehaviorSubject<Frais[]>([]);
-  readonly appels_termines = this._reponses.asObservable();
-  public listeFrais: Frais[] = [];
+  private login: Login = new Login;
+  constructor(private http: HttpClient, private router: Router) { }
 
-  constructor(private http: HttpClient, private gsb_api: GsbLoginService) { }
-  listeFraisDuVisiteur() {
-    const headers = new HttpHeaders({
-      'Authorization': 'Bearer ' + this.gsb_api.recupereBearer()
-    });
+  serviceEnvoieLogin(login: string, password: string){
 
-    this.http.get<Frais[]>(
-      'http://localhost/api/ProjetWSGSB/public/api/listeFrais/' + this.gsb_api.visiteurId(),
-      { headers: headers }
-    ).subscribe(
-      data => {
-        this.listeFrais = data;
-        this._reponses.next(this.listeFrais);
-      },
-      error => console.log('Erreur appel API', error)
+    const requestObject = new Visiteur({"login": login, "password": password});
+    return this.http.post<Login>('http://localhost/ProjetWSGsb/public/api/listeFrais/1', requestObject).
+      subscribe(
+        data => {
+          this.login = new Login(data);
+          this.router.navigate(['/frais/liste']);
+        },
+
+      error => console.log('Erreur appel API')
     );
+
+  }
+
+
+  visiteurId(): number {
+    return this.login.visiteur.id_visiteur;
+  }
+
+  recupererBearer() {
+    return this.login.access_token;
   }
 }
-

@@ -1,6 +1,14 @@
-
 <app-menu></app-menu>
+
 <p></p>
 
+<br><br>
 
+<div class="container">
+  <ul id="requetesTerminees">
+    <li *ngFor="let frais of getListeFrais() | async">
+      {{ frais.anneemois }} - {{ frais.lib_etat }}
+    </li>
+  </ul>
+</div>
 

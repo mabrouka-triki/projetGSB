@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 
-import { GsbLoginService} from './gsb-login.service';
+import { GsbLoginService } from './gsb-login.service';
 
 describe('GsbLoginService', () => {
   let service: GsbLoginService;
